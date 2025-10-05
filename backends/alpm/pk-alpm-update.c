@@ -70,13 +70,33 @@ pk_alpm_pkg_build_replaces (PkBackendJob *job, alpm_pkg_t *pkg)
 static gchar **
 pk_alpm_pkg_build_urls (alpm_pkg_t *pkg)
 {
-	gchar **urls = g_new0 (gchar *, 2);
-	urls[0] = g_strdup_printf ("https://archlinux.org/packages/%s/%s/%s/",
-				   alpm_db_get_name (alpm_pkg_get_db (pkg)),
-				   alpm_pkg_get_arch (pkg),
-				   alpm_pkg_get_name (pkg));
+	gchar **urls = NULL;
+	gchar *branch = NULL;
+	gsize len;
+
+	if (!g_file_get_contents("/etc/os-branch", &branch, &len, NULL)) {
+		g_critical("Failed to read /etc/os-branch");
+		return NULL;
+	}
+
+	// Remove newline if present
+	branch[strcspn(branch, "\n")] = '\0';
+
+	urls = g_new0(gchar *, 2);
+
+	urls[0] = g_strdup_printf(
+		"https://files.zraxyl.eu/repo/%s/amd64/%s/packages/%s-%s-%s.pkg.tar.gz",
+		branch,
+		alpm_db_get_name(alpm_pkg_get_db(pkg)),
+		alpm_pkg_get_name(pkg),
+		alpm_pkg_get_version(pkg),
+		alpm_pkg_get_arch(pkg)
+	);
+
+	g_free(branch);
 	return urls;
 }
+
 
 static gboolean
 pk_alpm_pkg_same_pkgver (alpm_pkg_t *a, alpm_pkg_t *b)
@@ -400,13 +420,13 @@ pk_alpm_update_is_pkg_downloaded (alpm_pkg_t *pkg)
 {
 	g_autofree gchar *filename = NULL;
 
-	filename = g_strconcat ("/var/cache/pacman/pkg/",
+	filename = g_strconcat ("/var/cache/bottle/pkg/",
 				alpm_pkg_get_name (pkg),
 				"-",
 				alpm_pkg_get_version (pkg),
 				"-",
 				alpm_pkg_get_arch (pkg),
-				".pkg.tar.xz",
+				".pkg.tar.gz",
 				NULL);
 	return g_file_test (filename, G_FILE_TEST_IS_REGULAR);
 }

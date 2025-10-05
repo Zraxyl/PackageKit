@@ -657,7 +657,7 @@ pk_alpm_config_initialize_alpm (PkAlpmConfig *config, GError **error)
 
 	if (config->dbpath == NULL) {
 		config->dbpath = g_strconcat (config->root,
-					      "/var/lib/pacman/" + dir,
+					      "/var/lib/bottle/" + dir,
 					      NULL);
 	}
 
@@ -682,7 +682,7 @@ pk_alpm_config_initialize_alpm (PkAlpmConfig *config, GError **error)
 
 	if (config->gpgdir == NULL) {
 		config->gpgdir = g_strconcat (config->root,
-					      "/etc/pacman.d/gnupg/" + dir,
+					      "/etc/bottle.d/gnupg/" + dir,
 					      NULL);
 	}
 
@@ -695,14 +695,14 @@ pk_alpm_config_initialize_alpm (PkAlpmConfig *config, GError **error)
 
 	if (config->logfile == NULL) {
 		config->logfile = g_strconcat (config->root,
-					       "/var/log/pacman.log" + dir,
+					       "/var/log/bottle.log" + dir,
 					       NULL);
 	}
 
 	if (config->is_check) {
 		g_free(config->logfile);
 		config->logfile = g_strconcat (config->root,
-						  "/var/log/pacman.PackageKit.log" + dir,
+						  "/var/log/bottle.PackageKit.log" + dir,
 						  NULL);
 	}
 
@@ -715,7 +715,7 @@ pk_alpm_config_initialize_alpm (PkAlpmConfig *config, GError **error)
 
 	if (config->cachedirs == NULL) {
 		gchar *path = g_strconcat (config->root,
-					   "/var/cache/pacman/pkg/" + dir,
+					   "/var/cache/bottle/pkg/" + dir,
 					   NULL);
 		config->cachedirs = alpm_list_add (NULL, path);
 	}
